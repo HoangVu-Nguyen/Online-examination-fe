@@ -1,13 +1,46 @@
 import { useState } from 'react';
-import './LoginPage.css'; // Quan trọng: Dòng này gọi file CSS ở Bước 3 vào!
+import './LoginPage.css';
+import {useNavigate} from "react-router-dom"; // Quan trọng: Dòng này gọi file CSS ở Bước 3 vào!
 
 export default function LoginPage() {
   const [role, setRole] = useState('student');
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    alert(`Đăng nhập thành công với vai trò: ${role}`);
-  };
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        const email = e.target[0].value;
+        const password = e.target[1].value;
+
+        try {
+            const res = await fetch(
+                "https://unwifely-pamella-interrailway.ngrok-free.dev/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                    }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert("Đăng nhập thành công!");
+                console.log(data);
+            } else {
+                alert(data.message || "Lỗi đăng nhập");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Không thể kết nối server");
+        }
+        useNavigate()
+    };
 
   return (
     <div className="login-container">
@@ -81,7 +114,7 @@ export default function LoginPage() {
           )}
 
           <p className="register-link">
-            Chưa có tài khoản? <a href="#">Đăng ký ngay</a>
+            Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
           </p>
         </div>
       </div>
